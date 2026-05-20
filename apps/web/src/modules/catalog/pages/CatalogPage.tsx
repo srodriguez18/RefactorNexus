@@ -29,6 +29,7 @@ export function CatalogPage() {
   const [searchInput, setSearchInput] = useState('')
   const [debouncedTerm, setDebouncedTerm] = useState('')
   const [showModal, setShowModal] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
   const user = useCurrentUser()
 
   useEffect(() => {
@@ -46,7 +47,11 @@ export function CatalogPage() {
 
   const handleDelete = (id: number) => {
     if (window.confirm('¿Eliminar este producto? Esta acción no se puede deshacer.')) {
-      deleteProduct.mutate(id)
+      setDeleteError(null)
+      deleteProduct.mutate(id, {
+        onError: (err) =>
+          setDeleteError(err instanceof Error ? err.message : 'Error al eliminar el producto'),
+      })
     }
   }
 
@@ -101,6 +106,10 @@ export function CatalogPage() {
           fontSize: '0.9rem',
         }}
       />
+
+      {deleteError && (
+        <p style={{ color: '#c00', marginBottom: '0.75rem', fontSize: '0.9rem' }}>{deleteError}</p>
+      )}
 
       <ProductList
         products={activeQuery.data ?? []}

@@ -1,3 +1,4 @@
+import { AppError } from '../../../lib/AppError.js'
 import type { INotificationRepository } from '../domain/INotificationRepository.js'
 import type { Notification, NotificationKind } from '../domain/Notification.js'
 
@@ -8,7 +9,7 @@ export class CreateNotification {
 
   async execute(params: { userId: number; message: string; kind: string }): Promise<Notification> {
     if (!VALID_KINDS.includes(params.kind as NotificationKind)) {
-      throw new Error('Tipo de notificación inválido')
+      throw new AppError('Tipo de notificación inválido', 400)
     }
     return this.notificationRepo.create({
       userId: params.userId,

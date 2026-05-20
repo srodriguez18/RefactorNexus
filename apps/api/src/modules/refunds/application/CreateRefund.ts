@@ -1,4 +1,5 @@
 import { applyVAT } from '@legacy-nexus/finance'
+import { AppError } from '../../../lib/AppError.js'
 import type { IRefundRepository } from '../domain/IRefundRepository.js'
 import type { Refund } from '../domain/Refund.js'
 import type { ISaleRepository } from '../../sales/domain/ISaleRepository.js'
@@ -11,7 +12,7 @@ export class CreateRefund {
 
   async execute(params: { saleId: number; userId: number; reason: string }): Promise<Refund> {
     const sale = await this.saleRepo.findById(params.saleId)
-    if (!sale) throw new Error('Venta no encontrada')
+    if (!sale) throw new AppError('Venta no encontrada', 404)
 
     const subtotal = sale.items.reduce((sum, item) => sum + item.quantity * item.unitPrice, 0)
     const amount = applyVAT(subtotal)

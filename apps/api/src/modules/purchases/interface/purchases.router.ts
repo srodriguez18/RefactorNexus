@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type { CreatePurchaseDto, ReconcileDto } from '@legacy-nexus/shared'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken, verifyAdmin } from '../../auth/interface/auth.middleware.js'
 import { InventoryRepositoryPrisma } from '../../inventory/infrastructure/InventoryRepositoryPrisma.js'
@@ -18,13 +19,23 @@ export async function purchasesRouter(app: FastifyInstance): Promise<void> {
   const listSuppliers = new ListSuppliers(purchaseRepo)
 
   app.get('/', { preHandler: verifyToken }, async (_request, reply) => {
-    const purchases = await listPurchases.execute()
-    return reply.send(purchases)
+    try {
+      const purchases = await listPurchases.execute()
+      return reply.send(purchases)
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
+    }
   })
 
   app.get('/suppliers', { preHandler: verifyToken }, async (_request, reply) => {
-    const suppliers = await listSuppliers.execute()
-    return reply.send(suppliers)
+    try {
+      const suppliers = await listSuppliers.execute()
+      return reply.send(suppliers)
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
+    }
   })
 
   app.post<{ Body: CreatePurchaseDto }>(
@@ -35,8 +46,8 @@ export async function purchasesRouter(app: FastifyInstance): Promise<void> {
         const purchase = await createPurchase.execute(request.body)
         return reply.status(201).send(purchase)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al crear compra'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -52,9 +63,8 @@ export async function purchasesRouter(app: FastifyInstance): Promise<void> {
         })
         return reply.send(purchase)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al reconciliar compra'
-        const status = message.includes('no encontrada') ? 404 : 400
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )

@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type { AdjustStockDto } from '@legacy-nexus/shared'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken } from '../../auth/interface/auth.middleware.js'
 import { InventoryRepositoryPrisma } from '../infrastructure/InventoryRepositoryPrisma.js'
@@ -16,24 +17,39 @@ export async function inventoryRouter(app: FastifyInstance): Promise<void> {
   const adjustStock = new AdjustStock(inventoryRepo)
 
   app.get('/', async (_request, reply) => {
-    const stock = await listInventory.execute()
-    return reply.send(stock)
+    try {
+      const stock = await listInventory.execute()
+      return reply.send(stock)
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
+    }
   })
 
   app.get<{ Params: { id: string } }>('/warehouse/:id', async (request, reply) => {
-    const stock = await listByWarehouse.execute(Number(request.params.id))
-    return reply.send(stock)
+    try {
+      const stock = await listByWarehouse.execute(Number(request.params.id))
+      return reply.send(stock)
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
+    }
   })
 
   app.get<{ Params: { pid: string }; Querystring: { warehouseId?: string } }>(
     '/stock/:pid',
     async (request, reply) => {
-      const productId = Number(request.params.pid)
-      const warehouseId = request.query.warehouseId
-        ? Number(request.query.warehouseId)
-        : undefined
-      const quantity = await getStock.execute(productId, warehouseId)
-      return reply.send({ productId, warehouseId, quantity })
+      try {
+        const productId = Number(request.params.pid)
+        const warehouseId = request.query.warehouseId
+          ? Number(request.query.warehouseId)
+          : undefined
+        const quantity = await getStock.execute(productId, warehouseId)
+        return reply.send({ productId, warehouseId, quantity })
+      } catch (err) {
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
+      }
     },
   )
 
@@ -45,8 +61,8 @@ export async function inventoryRouter(app: FastifyInstance): Promise<void> {
         await adjustStock.execute(request.body)
         return reply.status(204).send()
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al ajustar stock'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )

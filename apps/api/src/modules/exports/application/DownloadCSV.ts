@@ -1,3 +1,4 @@
+import { AppError } from '../../../lib/AppError.js'
 import type { IExportRepository } from '../domain/IExportRepository.js'
 
 function escapeCsv(value: string | number): string {
@@ -22,7 +23,7 @@ export class DownloadCSV {
       params.customerType !== undefined &&
       !(VALID_CUSTOMER_TYPES as readonly string[]).includes(params.customerType)
     ) {
-      throw new Error('Tipo de cliente inválido')
+      throw new AppError('Tipo de cliente inválido', 400)
     }
 
     const rows = await this.exportRepo.salesForCSV({

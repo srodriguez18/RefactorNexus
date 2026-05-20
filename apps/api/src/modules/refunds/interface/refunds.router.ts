@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type { CreateRefundDto } from '@legacy-nexus/shared'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken, verifyAdmin } from '../../auth/interface/auth.middleware.js'
 import { SaleRepositoryPrisma } from '../../sales/infrastructure/SaleRepositoryPrisma.js'
@@ -29,9 +30,8 @@ export async function refundsRouter(app: FastifyInstance): Promise<void> {
         })
         return reply.status(201).send(refund)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al crear reembolso'
-        const status = message.includes('no encontrada') ? 404 : 400
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -47,9 +47,8 @@ export async function refundsRouter(app: FastifyInstance): Promise<void> {
         })
         return reply.send(refund)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al aprobar reembolso'
-        const status = message.includes('no encontrado') ? 404 : 400
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -62,9 +61,8 @@ export async function refundsRouter(app: FastifyInstance): Promise<void> {
         const refund = await rejectRefund.execute({ refundId: Number(request.params.id) })
         return reply.send(refund)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al rechazar reembolso'
-        const status = message.includes('no encontrado') ? 404 : 400
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -73,12 +71,17 @@ export async function refundsRouter(app: FastifyInstance): Promise<void> {
     '/user/:id',
     { preHandler: verifyToken },
     async (request, reply) => {
-      const targetUserId = Number(request.params.id)
-      if (request.user!.userId !== targetUserId && !request.user!.isAdmin) {
-        return reply.status(403).send({ error: 'Acceso denegado' })
+      try {
+        const targetUserId = Number(request.params.id)
+        if (request.user!.userId !== targetUserId && !request.user!.isAdmin) {
+          return reply.status(403).send({ error: 'Acceso denegado' })
+        }
+        const refunds = await listRefundsByUser.execute(targetUserId)
+        return reply.send(refunds)
+      } catch (err) {
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
-      const refunds = await listRefundsByUser.execute(targetUserId)
-      return reply.send(refunds)
     },
   )
 }

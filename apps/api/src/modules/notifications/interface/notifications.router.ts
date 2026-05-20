@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type { CreateNotificationDto, BroadcastNotificationDto } from '@legacy-nexus/shared'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken, verifyAdmin } from '../../auth/interface/auth.middleware.js'
 import { UserRepositoryPrisma } from '../../auth/infrastructure/UserRepositoryPrisma.js'
@@ -23,12 +24,17 @@ export async function notificationsRouter(app: FastifyInstance): Promise<void> {
     '/user/:uid',
     { preHandler: verifyToken },
     async (request, reply) => {
-      const targetUserId = Number(request.params.uid)
-      if (request.user!.userId !== targetUserId && !request.user!.isAdmin) {
-        return reply.status(403).send({ error: 'Acceso denegado' })
+      try {
+        const targetUserId = Number(request.params.uid)
+        if (request.user!.userId !== targetUserId && !request.user!.isAdmin) {
+          return reply.status(403).send({ error: 'Acceso denegado' })
+        }
+        const notifications = await listNotifications.execute(targetUserId)
+        return reply.send(notifications)
+      } catch (err) {
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
-      const notifications = await listNotifications.execute(targetUserId)
-      return reply.send(notifications)
     },
   )
 
@@ -40,9 +46,8 @@ export async function notificationsRouter(app: FastifyInstance): Promise<void> {
         const notification = await createNotification.execute(request.body)
         return reply.status(201).send(notification)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al crear notificación'
-        const status = message.includes('inválido') ? 400 : 500
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -55,9 +60,8 @@ export async function notificationsRouter(app: FastifyInstance): Promise<void> {
         const count = await broadcastNotification.execute(request.body)
         return reply.status(201).send({ count })
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error en broadcast'
-        const status = message.includes('inválido') ? 400 : 500
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -70,9 +74,8 @@ export async function notificationsRouter(app: FastifyInstance): Promise<void> {
         await markAsRead.execute(Number(request.params.id))
         return reply.status(204).send()
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al marcar notificación'
-        const status = message.includes('no encontrada') ? 404 : 500
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -85,9 +88,8 @@ export async function notificationsRouter(app: FastifyInstance): Promise<void> {
         await deleteNotification.execute(Number(request.params.id))
         return reply.status(204).send()
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al eliminar notificación'
-        const status = message.includes('no encontrada') ? 404 : 500
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )

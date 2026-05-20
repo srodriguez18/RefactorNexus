@@ -22,6 +22,11 @@ export async function httpClient<T>(path: string, options: RequestInit = {}): Pr
     headers['Authorization'] = `Bearer ${token}`
   }
 
-  const response = await fetch(`/api${path}`, { ...options, headers })
+  let response: Response
+  try {
+    response = await fetch(`/api${path}`, { ...options, headers })
+  } catch {
+    throw new Error('No se pudo conectar al servidor')
+  }
   return handleResponse<T>(response)
 }

@@ -1,3 +1,4 @@
+import { AppError } from '../../../lib/AppError.js'
 import type { Sale } from '../domain/Sale.js'
 import type { ISaleRepository } from '../domain/ISaleRepository.js'
 import type { IInventoryRepository } from '../../inventory/domain/IInventoryRepository.js'
@@ -14,10 +15,10 @@ export class ReturnSale {
     const sale = await this.saleRepo.findById(saleId)
 
     if (!sale) {
-      throw new Error('Venta no encontrada')
+      throw new AppError('Venta no encontrada', 404)
     }
     if (!sale.isReturnable()) {
-      throw new Error(`La venta ya tiene status '${sale.status}' y no puede devolverse`)
+      throw new AppError(`La venta ya tiene status '${sale.status}' y no puede devolverse`, 400)
     }
 
     // Restore stock for every item before updating status

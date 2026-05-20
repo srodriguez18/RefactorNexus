@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type { CreateProductDto } from '@legacy-nexus/shared'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken, verifyAdmin } from '../../auth/interface/auth.middleware.js'
 import { ProductRepositoryPrisma } from '../infrastructure/ProductRepositoryPrisma.js'
@@ -18,21 +19,32 @@ export async function catalogRouter(app: FastifyInstance): Promise<void> {
   const deleteProduct = new DeleteProduct(productRepo)
 
   app.get('/', async (_request, reply) => {
-    const products = await listProducts.execute()
-    return reply.send(products)
+    try {
+      const products = await listProducts.execute()
+      return reply.send(products)
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
+    }
   })
 
   app.get<{ Querystring: { q?: string } }>('/search', async (request, reply) => {
-    const products = await searchProducts.execute(request.query.q ?? '')
-    return reply.send(products)
+    try {
+      const products = await searchProducts.execute(request.query.q ?? '')
+      return reply.send(products)
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
+    }
   })
 
   app.get<{ Params: { id: string } }>('/:id', async (request, reply) => {
     try {
       const product = await getProduct.execute(Number(request.params.id))
       return reply.send(product)
-    } catch {
-      return reply.status(404).send({ error: 'Producto no encontrado' })
+    } catch (err) {
+      if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+      return reply.status(500).send({ error: 'Error interno del servidor' })
     }
   })
 
@@ -44,8 +56,8 @@ export async function catalogRouter(app: FastifyInstance): Promise<void> {
         const product = await createProduct.execute(request.body)
         return reply.status(201).send(product)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al crear producto'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -57,8 +69,9 @@ export async function catalogRouter(app: FastifyInstance): Promise<void> {
       try {
         await deleteProduct.execute(Number(request.params.id))
         return reply.status(204).send()
-      } catch {
-        return reply.status(404).send({ error: 'Producto no encontrado' })
+      } catch (err) {
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )

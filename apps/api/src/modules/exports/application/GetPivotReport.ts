@@ -1,3 +1,4 @@
+import { AppError } from '../../../lib/AppError.js'
 import { isValidRowDimension, isValidColDimension } from '../domain/PivotDimension.js'
 import type { IExportRepository, PivotRow } from '../domain/IExportRepository.js'
 
@@ -6,10 +7,10 @@ export class GetPivotReport {
 
   async execute(params: { year: number; rowDim: string; colDim: string }): Promise<PivotRow[]> {
     if (!isValidRowDimension(params.rowDim)) {
-      throw new Error('Dimensión de fila inválida')
+      throw new AppError('Dimensión de fila inválida', 400)
     }
     if (!isValidColDimension(params.colDim)) {
-      throw new Error('Dimensión de columna inválida')
+      throw new AppError('Dimensión de columna inválida', 400)
     }
     return this.exportRepo.pivotData({
       year: params.year,

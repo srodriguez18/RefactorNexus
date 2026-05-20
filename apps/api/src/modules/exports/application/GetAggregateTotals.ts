@@ -1,4 +1,5 @@
 import { applyVAT } from '@legacy-nexus/finance'
+import { AppError } from '../../../lib/AppError.js'
 import type { IExportRepository, AggregateTotals } from '../domain/IExportRepository.js'
 
 const VALID_CUSTOMER_TYPES = ['NORMAL', 'LEGACY_A'] as const
@@ -14,7 +15,7 @@ export class GetAggregateTotals {
       params.customerType !== undefined &&
       !(VALID_CUSTOMER_TYPES as readonly string[]).includes(params.customerType)
     ) {
-      throw new Error('Tipo de cliente inválido')
+      throw new AppError('Tipo de cliente inválido', 400)
     }
 
     const result = await this.exportRepo.aggregateTotals({

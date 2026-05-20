@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import type { CreateSaleDto } from '@legacy-nexus/shared'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken } from '../../auth/interface/auth.middleware.js'
 import { ProductRepositoryPrisma } from '../../catalog/infrastructure/ProductRepositoryPrisma.js'
@@ -27,8 +28,8 @@ export async function salesRouter(app: FastifyInstance): Promise<void> {
         })
         return reply.status(201).send(summary)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al crear venta'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -41,9 +42,8 @@ export async function salesRouter(app: FastifyInstance): Promise<void> {
         const sale = await returnSale.execute(Number(request.params.id))
         return reply.send(sale)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al devolver venta'
-        const status = message.includes('no encontrada') ? 404 : 400
-        return reply.status(status).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -52,12 +52,17 @@ export async function salesRouter(app: FastifyInstance): Promise<void> {
     '/:id',
     { preHandler: verifyToken },
     async (request, reply) => {
-      const sale = await saleRepo.findById(Number(request.params.id))
-      if (!sale) return reply.status(404).send({ error: 'Venta no encontrada' })
-      if (request.user!.userId !== sale.userId && !request.user!.isAdmin) {
-        return reply.status(403).send({ error: 'Acceso denegado' })
+      try {
+        const sale = await saleRepo.findById(Number(request.params.id))
+        if (!sale) return reply.status(404).send({ error: 'Venta no encontrada' })
+        if (request.user!.userId !== sale.userId && !request.user!.isAdmin) {
+          return reply.status(403).send({ error: 'Acceso denegado' })
+        }
+        return reply.send(sale)
+      } catch (err) {
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
-      return reply.send(sale)
     },
   )
 
@@ -65,12 +70,17 @@ export async function salesRouter(app: FastifyInstance): Promise<void> {
     '/user/:id',
     { preHandler: verifyToken },
     async (request, reply) => {
-      const targetUserId = Number(request.params.id)
-      if (request.user!.userId !== targetUserId && !request.user!.isAdmin) {
-        return reply.status(403).send({ error: 'Acceso denegado' })
+      try {
+        const targetUserId = Number(request.params.id)
+        if (request.user!.userId !== targetUserId && !request.user!.isAdmin) {
+          return reply.status(403).send({ error: 'Acceso denegado' })
+        }
+        const sales = await saleRepo.listByUser(targetUserId)
+        return reply.send(sales)
+      } catch (err) {
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
-      const sales = await saleRepo.listByUser(targetUserId)
-      return reply.send(sales)
     },
   )
 }

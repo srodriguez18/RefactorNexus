@@ -1,3 +1,4 @@
+import { AppError } from '../../../lib/AppError.js'
 import type { INotificationRepository } from '../domain/INotificationRepository.js'
 import type { NotificationKind } from '../domain/Notification.js'
 import type { IUserRepository } from '../../auth/domain/IUserRepository.js'
@@ -12,7 +13,7 @@ export class BroadcastNotification {
 
   async execute(params: { message: string; kind: string }): Promise<number> {
     if (!VALID_KINDS.includes(params.kind as NotificationKind)) {
-      throw new Error('Tipo de notificación inválido')
+      throw new AppError('Tipo de notificación inválido', 400)
     }
     const userIds = await this.userRepo.listAllIds()
     if (userIds.length === 0) return 0

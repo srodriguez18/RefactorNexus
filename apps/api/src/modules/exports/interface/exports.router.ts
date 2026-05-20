@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+import { AppError } from '../../../lib/AppError.js'
 import { prisma } from '../../../lib/prisma.js'
 import { verifyToken, verifyAdmin } from '../../auth/interface/auth.middleware.js'
 import { ExportRepositoryPrisma } from '../infrastructure/ExportRepositoryPrisma.js'
@@ -32,8 +33,8 @@ export async function exportsRouter(app: FastifyInstance): Promise<void> {
         })
         return reply.send(rows)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error en reporte pivot'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -49,8 +50,8 @@ export async function exportsRouter(app: FastifyInstance): Promise<void> {
         })
         return reply.send(result)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al obtener totales'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
@@ -70,8 +71,8 @@ export async function exportsRouter(app: FastifyInstance): Promise<void> {
           .header('Content-Disposition', 'attachment; filename=export.csv')
           .send(csv)
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Error al exportar CSV'
-        return reply.status(400).send({ error: message })
+        if (err instanceof AppError) return reply.status(err.statusCode).send({ error: err.message })
+        return reply.status(500).send({ error: 'Error interno del servidor' })
       }
     },
   )
