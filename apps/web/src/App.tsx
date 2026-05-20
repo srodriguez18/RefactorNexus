@@ -4,6 +4,7 @@ import { AuthProvider, useAuthContext } from './context/AuthContext'
 import { LoginPage } from './modules/auth/pages/LoginPage'
 import { useLogout } from './modules/auth/hooks/useAuth'
 import { CatalogPage } from './modules/catalog/pages/CatalogPage'
+import { InventoryPage } from './modules/inventory/pages/InventoryPage'
 
 const queryClient = new QueryClient()
 
@@ -66,7 +67,7 @@ function AppRoutes() {
       />
       <Route
         path="/inventory"
-        element={<ProtectedLayout><div>Inventario — próximamente</div></ProtectedLayout>}
+        element={<ProtectedLayout><InventoryPage /></ProtectedLayout>}
       />
       <Route
         path="/sales"
