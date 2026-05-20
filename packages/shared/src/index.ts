@@ -60,6 +60,23 @@ export type CreateSaleDto = {
   items: SaleItemDto[]
 }
 
+export type SaleRecord = {
+  id: number
+  userId: number
+  customerType: 'NORMAL' | 'LEGACY_A'
+  subtotal: number
+  discount: number
+  total: number
+  status: string
+  createdAt: string
+  items: Array<{
+    saleId: number
+    productId: number
+    quantity: number
+    unitPrice: number
+  }>
+}
+
 export type SaleSummary = {
   id: number
   subtotal: number

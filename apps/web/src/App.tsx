@@ -5,6 +5,7 @@ import { LoginPage } from './modules/auth/pages/LoginPage'
 import { useLogout } from './modules/auth/hooks/useAuth'
 import { CatalogPage } from './modules/catalog/pages/CatalogPage'
 import { InventoryPage } from './modules/inventory/pages/InventoryPage'
+import { SalesPage } from './modules/sales/pages/SalesPage'
 
 const queryClient = new QueryClient()
 
@@ -71,7 +72,7 @@ function AppRoutes() {
       />
       <Route
         path="/sales"
-        element={<ProtectedLayout><div>Ventas — próximamente</div></ProtectedLayout>}
+        element={<ProtectedLayout><SalesPage /></ProtectedLayout>}
       />
       <Route path="/" element={<Navigate to="/catalog" replace />} />
       <Route path="*" element={<Navigate to="/catalog" replace />} />
