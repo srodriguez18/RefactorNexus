@@ -440,3 +440,113 @@ repositorios con lógica compleja — candidatos para una segunda iteración.
 El glob `src/modules/*/application/*.ts` incluía ~20 archivos sin tests,
 bajando el % global a 50 %. Se cambió a una lista explícita de los 19 archivos
 efectivamente cubiertos para que los umbrales reflejen el trabajo real hecho.
+
+---
+
+## Historial de prompts — cronológico completo
+
+Registro de todas las instrucciones que guiaron el trabajo en este
+repositorio, desde el inicio del proyecto.
+
+### Sesión 1 — Scaffolding y estructura base
+
+1. Crear `README.md` y `JOURNAL.md` vacíos con secciones placeholder
+   en la raíz del repositorio.
+2. Configurar un monorepo con pnpm workspaces: `apps/api` (Fastify +
+   Prisma + TypeScript), `apps/web` (React + Vite + TypeScript),
+   `packages/finance`, `packages/shared`.
+3–8. *(correcciones de errores de configuración del monorepo)*
+8. Recrear el schema de Prisma con modelos en inglés, correcciones
+   de tipos (`amount` Decimal, `discount` explícito, FK enforcement).
+9. Implementar `packages/finance` con `applyVAT()` y
+   `calculateSaleTotal()` — lógica financiera pura sin dependencias.
+10. Implementar módulo Auth en `apps/api` (Clean Architecture):
+    bcrypt, JWT, `verifyToken`, `verifyAdmin`.
+11. Agregar cambios de base de datos al staging para commits separados.
+12. Instalar curl para probar el endpoint de login.
+13–17. *(correcciones de errores de PowerShell con curl)*
+18. Implementar módulo Catalog en `apps/api`: `ListProducts`,
+    `GetProduct`, `SearchProducts`, `CreateProduct`, `DeleteProduct`
+    con soft delete; corrección de SQL injection.
+19. Implementar módulo Inventory en `apps/api`: `AdjustStock` con
+    validación `canDecrement()` en dominio; corrección de stock negativo.
+20–25. *(intentos interrumpidos del script de migración)*
+26. Crear `apps/api/prisma/seed.ts` con normalización de fechas,
+    estados y contraseñas del `seed_data.sql` legacy.
+
+### Sesión 2 — Migración, Fase 1 backend y frontend
+
+27. *(corrección de error en ejecución del seed)*
+28. *(confirmación de reset de base de datos)*
+29. Agregar entrada al `JOURNAL.md` sobre la migración de datos.
+30. Implementar módulo Sales en `apps/api`: `CreateSale` con
+    `calculateSaleTotal`, `ReturnSale` con restitución de stock.
+31. Crear módulo Auth en `apps/web`: `LoginForm` con
+    react-hook-form + zod, `AuthContext`, `httpClient`.
+32. Crear módulo Catalog en `apps/web`: `ProductList`, `ProductForm`,
+    búsqueda debounced 300 ms, `CatalogPage`.
+33. Crear módulo Inventory en `apps/web`: `InventoryTable` con
+    colores por nivel de stock, `AdjustStockForm`, `InventoryPage`.
+34. Crear módulo Sales en `apps/web`: `SaleHistory`, `SaleForm`
+    con `useFieldArray`, cálculo en tiempo real con `useWatch`.
+
+### Sesión 3 — Bounded contexts restantes (backend + frontend)
+
+35. Implementar módulo Notifications en `apps/api`: `BroadcastNotification`,
+    `MarkAsRead`, `DeleteNotification`; eliminación de caché incorrecto.
+36. Crear módulo Notifications en `apps/web`: `NotificationList`,
+    `NotificationBadge` con polling 30 s, `BroadcastForm`.
+37. *(reporte)* Error 404 en `GET /api/notifications/user/1` —
+    causa: router no registrado; fix: reinicio del servidor.
+38. Implementar módulo Purchases en `apps/api`: `CreatePurchase`,
+    `ReconcilePurchase` con validación de estado duplicado.
+39. Crear módulo Purchases en `apps/web`: `PurchaseList`,
+    `PurchaseForm`, `ReconcileForm`, `PurchasesPage`.
+40. Implementar módulo Refunds en `apps/api`: `CreateRefund`,
+    `ApproveRefund`, `RejectRefund`; normalización de estados legacy.
+41. Crear módulo Refunds en `apps/web`: `RefundList`,
+    `RefundForm` con preview de monto, `RefundsPage`.
+42. *(reporte de bug)* `Bad request: Body cannot be empty when
+    content-type is set to 'application/json'` al rechazar un reembolso —
+    fix en `httpClient.ts`: `Content-Type` sólo cuando hay body.
+43. Implementar módulo Reports en `apps/api`: `GetMonthlyReport`,
+    `GetMonthlyTotal`, `ExportSalesCSV`; eliminación de lógica SQL
+    duplicada delegando a `@legacy-nexus/finance`.
+44. Crear módulo Reports en `apps/web`: `MonthlyReportTable`,
+    pestaña de totales, descarga CSV.
+45. Implementar módulo Exports en `apps/api`: `GetPivotReport` con
+    whitelist de dimensiones, pivot en memoria; `GetAggregateTotals`;
+    `DownloadCSV` con `escapeCsv()`.
+46. Integrar Exports dentro del módulo Reports en `apps/web` (sin
+    nueva ruta): `PivotTable`, `PivotControls`, `AggregateTotalsCard`.
+47. Aplicar manejo de errores integral en backend y frontend —
+    `AppError` con `statusCode`, `instanceof` en routers, try/catch
+    en `httpClient`, banners de error en páginas.
+
+### Sesión 4 — Documentación, UI y pruebas
+
+48. Crear un archivo CSS global con design tokens, reset, clases
+    utilitarias (`.badge--*`, `.card`, `.error-msg`).
+49. Crear `docs/adr/ADR-001.md` con contenido exacto
+    (elección de arquitectura).
+50. Crear `docs/adr/ADR-002.md` con contenido exacto
+    (stack tecnológico).
+51. Crear `docs/adr/ADR-003.md` con contenido exacto
+    (migración de datos).
+52. Crear `docs/adr/ADR-004.md` con contenido exacto
+    (estrategia de seguridad).
+53. Generar el `README.md` completo: descripción, arranque en
+    máquina limpia, estructura del monorepo.
+54. Convertir `JOURNAL.md` en bitácora cronológica estructurada.
+55. Normalizar estilos `th` en todas las tablas del frontend.
+56. Implementar mejoras recomendadas (nav activa con `NavLink`).
+57. Fijar el menú superior con `position: sticky` para que no
+    se desplace al hacer scroll en tablas.
+58. Agregar tests de frontend para alcanzar 80 % de cobertura.
+59. Agregar al README los comandos de prueba y porcentaje de cobertura.
+60. Agregar tests para el backend.
+61. Actualizar README con sección de pruebas de backend y registrar
+    los últimos cambios en el JOURNAL.
+62. Agregar historial de prompts resumido al final del JOURNAL.
+63. Ampliar el historial con todos los prompts desde el inicio
+    del proyecto.
