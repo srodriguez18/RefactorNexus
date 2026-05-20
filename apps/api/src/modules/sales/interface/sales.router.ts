@@ -49,6 +49,19 @@ export async function salesRouter(app: FastifyInstance): Promise<void> {
   )
 
   app.get<{ Params: { id: string } }>(
+    '/:id',
+    { preHandler: verifyToken },
+    async (request, reply) => {
+      const sale = await saleRepo.findById(Number(request.params.id))
+      if (!sale) return reply.status(404).send({ error: 'Venta no encontrada' })
+      if (request.user!.userId !== sale.userId && !request.user!.isAdmin) {
+        return reply.status(403).send({ error: 'Acceso denegado' })
+      }
+      return reply.send(sale)
+    },
+  )
+
+  app.get<{ Params: { id: string } }>(
     '/user/:id',
     { preHandler: verifyToken },
     async (request, reply) => {

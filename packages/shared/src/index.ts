@@ -60,6 +60,22 @@ export type CreateSaleDto = {
   items: SaleItemDto[]
 }
 
+export type RefundStatus = 'pending' | 'approved' | 'rejected'
+export type Refund = {
+  id: number
+  saleId: number
+  userId: number
+  reason: string
+  amount: number
+  status: RefundStatus
+  approvedBy: number | null
+  createdAt: string
+}
+export type CreateRefundDto = {
+  saleId: number
+  reason: string
+}
+
 export type PurchaseStatus = 'pending' | 'received' | 'reconciled'
 export type PurchaseItemDto = {
   productId: number
