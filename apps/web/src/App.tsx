@@ -10,6 +10,7 @@ import { NotificationsPage } from './modules/notifications/pages/NotificationsPa
 import { NotificationBadge } from './modules/notifications/components/NotificationBadge'
 import { PurchasesPage } from './modules/purchases/pages/PurchasesPage'
 import { RefundsPage } from './modules/refunds/pages/RefundsPage'
+import { ReportsPage } from './modules/reports/pages/ReportsPage'
 
 const queryClient = new QueryClient()
 
@@ -26,6 +27,7 @@ const linkStyle: React.CSSProperties = { color: '#e0e0ff', textDecoration: 'none
 
 function AppNav() {
   const logout = useLogout()
+  const { currentUser } = useAuthContext()
   return (
     <nav style={navStyle}>
       <span style={{ fontWeight: 600, marginRight: 'auto' }}>Legacy Nexus</span>
@@ -34,6 +36,9 @@ function AppNav() {
       <Link to="/sales" style={linkStyle}>Ventas</Link>
       <Link to="/purchases" style={linkStyle}>Compras</Link>
       <Link to="/refunds" style={linkStyle}>Reembolsos</Link>
+      {currentUser?.isAdmin && (
+        <Link to="/reports" style={linkStyle}>Reportes</Link>
+      )}
       <Link to="/notifications" style={linkStyle}>
         Notificaciones<NotificationBadge />
       </Link>
@@ -94,6 +99,10 @@ function AppRoutes() {
       <Route
         path="/notifications"
         element={<ProtectedLayout><NotificationsPage /></ProtectedLayout>}
+      />
+      <Route
+        path="/reports"
+        element={<ProtectedLayout><ReportsPage /></ProtectedLayout>}
       />
       <Route path="/" element={<Navigate to="/catalog" replace />} />
       <Route path="*" element={<Navigate to="/catalog" replace />} />

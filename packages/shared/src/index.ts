@@ -60,6 +60,35 @@ export type CreateSaleDto = {
   items: SaleItemDto[]
 }
 
+export type RowDimension = 'customerType' | 'status' | 'userId'
+export type ColDimension = 'category' | 'supplierId' | 'warehouseId'
+export type PivotRow = {
+  rowLabel: string
+  colLabel: string
+  total: number
+  count: number
+}
+export type AggregateTotals = {
+  subtotal: number
+  vat: number
+  total: number
+  count: number
+}
+
+export type MonthlySaleRow = {
+  id: number
+  createdAt: string
+  username: string
+  subtotal: number
+  discount: number
+  total: number
+  itemCount: number
+}
+export type MonthlyTotal = {
+  total: number
+  count: number
+}
+
 export type RefundStatus = 'pending' | 'approved' | 'rejected'
 export type Refund = {
   id: number
