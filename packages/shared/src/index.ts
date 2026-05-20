@@ -32,3 +32,20 @@ export type CreateProductDto = {
   category?: string
   supplierId?: number
 }
+
+export type InventoryStock = {
+  productId: number
+  productName: string
+  warehouseId: number
+  warehouseName: string
+  quantity: number
+}
+
+export type MovementType = 'IN' | 'OUT' | 'ADJUSTMENT'
+
+export type AdjustStockDto = {
+  productId: number
+  warehouseId: number
+  quantity: number
+  type: MovementType
+}
