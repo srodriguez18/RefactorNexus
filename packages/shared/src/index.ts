@@ -60,6 +60,36 @@ export type CreateSaleDto = {
   items: SaleItemDto[]
 }
 
+export type PurchaseStatus = 'pending' | 'received' | 'reconciled'
+export type PurchaseItemDto = {
+  productId: number
+  quantity: number
+  unitCost: number
+}
+export type CreatePurchaseDto = {
+  supplierId: number
+  items: PurchaseItemDto[]
+  receivedDate?: string
+}
+export type ReconcileDto = {
+  bankRef: string
+}
+export type Purchase = {
+  id: number
+  supplierId: number
+  supplierName: string
+  total: number
+  receivedDate: string | null
+  bankRef: string | null
+  status: PurchaseStatus
+}
+export type Supplier = {
+  id: number
+  name: string
+  contact: string | null
+  country: string | null
+}
+
 export type NotificationKind = 'info' | 'warn' | 'alert' | 'system' | 'marketing'
 export type NotificationStatus = 'unread' | 'read'
 export type Notification = {

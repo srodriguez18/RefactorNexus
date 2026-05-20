@@ -8,6 +8,7 @@ import { InventoryPage } from './modules/inventory/pages/InventoryPage'
 import { SalesPage } from './modules/sales/pages/SalesPage'
 import { NotificationsPage } from './modules/notifications/pages/NotificationsPage'
 import { NotificationBadge } from './modules/notifications/components/NotificationBadge'
+import { PurchasesPage } from './modules/purchases/pages/PurchasesPage'
 
 const queryClient = new QueryClient()
 
@@ -30,6 +31,7 @@ function AppNav() {
       <Link to="/catalog" style={linkStyle}>Catálogo</Link>
       <Link to="/inventory" style={linkStyle}>Inventario</Link>
       <Link to="/sales" style={linkStyle}>Ventas</Link>
+      <Link to="/purchases" style={linkStyle}>Compras</Link>
       <Link to="/notifications" style={linkStyle}>
         Notificaciones<NotificationBadge />
       </Link>
@@ -78,6 +80,10 @@ function AppRoutes() {
       <Route
         path="/sales"
         element={<ProtectedLayout><SalesPage /></ProtectedLayout>}
+      />
+      <Route
+        path="/purchases"
+        element={<ProtectedLayout><PurchasesPage /></ProtectedLayout>}
       />
       <Route
         path="/notifications"
