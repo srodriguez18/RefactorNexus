@@ -6,6 +6,8 @@ import { useLogout } from './modules/auth/hooks/useAuth'
 import { CatalogPage } from './modules/catalog/pages/CatalogPage'
 import { InventoryPage } from './modules/inventory/pages/InventoryPage'
 import { SalesPage } from './modules/sales/pages/SalesPage'
+import { NotificationsPage } from './modules/notifications/pages/NotificationsPage'
+import { NotificationBadge } from './modules/notifications/components/NotificationBadge'
 
 const queryClient = new QueryClient()
 
@@ -28,6 +30,9 @@ function AppNav() {
       <Link to="/catalog" style={linkStyle}>Catálogo</Link>
       <Link to="/inventory" style={linkStyle}>Inventario</Link>
       <Link to="/sales" style={linkStyle}>Ventas</Link>
+      <Link to="/notifications" style={linkStyle}>
+        Notificaciones<NotificationBadge />
+      </Link>
       <button
         onClick={logout}
         style={{
@@ -73,6 +78,10 @@ function AppRoutes() {
       <Route
         path="/sales"
         element={<ProtectedLayout><SalesPage /></ProtectedLayout>}
+      />
+      <Route
+        path="/notifications"
+        element={<ProtectedLayout><NotificationsPage /></ProtectedLayout>}
       />
       <Route path="/" element={<Navigate to="/catalog" replace />} />
       <Route path="*" element={<Navigate to="/catalog" replace />} />
