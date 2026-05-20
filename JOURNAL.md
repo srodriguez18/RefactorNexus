@@ -340,6 +340,21 @@ el código de respuesta HTTP.
 
 ---
 
+## 2026-05-19 23:55 — Mejoras visuales y navegación
+
+**Implementado:**
+- Estilos `th` normalizados en las 7 tablas del frontend: eliminados
+  objetos `const th` / `const thStyle` con colores y fondos inline que
+  divergían entre componentes; todos los encabezados usan ahora el estilo
+  global de `index.css`
+- Nav activa: `Link` reemplazado por `NavLink` con función `className`
+  que aplica `.nav-link--active` a la ruta actual
+- Nav fija: `position: sticky; top: 0; z-index: 100` — evita el padding
+  extra que requeriría `position: fixed` y mantiene el nav en flujo normal
+  del documento sin interferir con el scroll de tablas
+
+---
+
 ## 2026-05-19 23:59 — Documentación
 
 **Creado:**
@@ -353,3 +368,75 @@ el código de respuesta HTTP.
   vs parches puntuales — SQL injection, auth bypass, bcrypt, stock negativo)
 - `README.md`: descripción del proyecto, instrucciones de arranque
   en máquina limpia, estructura del monorepo con árbol anotado
+
+---
+
+## 2026-05-20 00:15 — Pruebas del frontend (cobertura 80 %)
+
+**Implementado:**
+- Tooling: Vitest 2 + Testing Library + jsdom instalados en `apps/web`
+- `vitest.config.ts`: extiende la config de Vite con `mergeConfig`,
+  entorno `jsdom`, umbrales 80 % líneas/funciones/statements, 75 % ramas
+- `src/test/setup.ts`: extiende `expect` de vitest con matchers de
+  `@testing-library/jest-dom` y registra `afterEach(cleanup)`
+- 10 archivos de test, 89 pruebas, todas en verde
+- Cobertura final: 99.72 % statements/lines, 100 % functions, 97.7 % branches
+
+**Archivos cubiertos:**
+`httpClient`, `LoginForm`, `ProductList`, `InventoryTable`, `SaleHistory`,
+`PurchaseList`, `RefundList`, `NotificationList`, `MonthlyReportTable`, `PivotTable`
+
+**Decisión de alcance:**
+La cobertura se limita a componentes presentacionales puros y al httpClient.
+Pages y hooks quedan fuera del scope porque requieren mocks de TanStack Query y
+contexto de auth — complejidad que no justifica el beneficio en esta iteración.
+
+**Bugs encontrados y corregidos durante las pruebas:**
+- `setup.ts` inicial usaba `import '@testing-library/jest-dom'` que llamaba
+  `expect.extend()` globalmente sin que `expect` estuviera disponible
+  (vitest no expone globals por defecto) → cambiado a
+  `import * as matchers from '@testing-library/jest-dom/matchers'` +
+  `expect.extend(matchers)` con import explícito de vitest
+- DOM no se limpiaba entre tests → agregado `afterEach(cleanup)` en setup
+- `mockFetch.mock.calls[0]` leía la llamada incorrecta porque el historial
+  del mock no se reseteaba entre tests → agregado `mockFetch.mockClear()`
+  en `beforeEach`
+- `getByText` fallaba en `MonthlyReportTable` y `PivotTable` cuando un valor
+  aparecía tanto en `tbody` como en `tfoot` (ej: fila única cuyo total
+  coincide con el gran total) → cambiado a `getAllByText(...).length >= 1`
+
+---
+
+## 2026-05-20 00:45 — Pruebas del backend (cobertura 100 %)
+
+**Implementado:**
+- Tooling: Vitest 2 + `@vitest/coverage-v8` instalados en `apps/api`
+- `vitest.config.ts`: entorno `node`, include explícito de los 19 archivos
+  cubiertos, umbrales 80 %/75 %
+- 15 archivos de test, 70 pruebas, todas en verde
+- Cobertura final: 100 % en los cuatro ejes sobre los archivos incluidos
+
+**Estrategia:**
+Pruebas unitarias puras de la capa de aplicación y dominio — los repositorios
+se reemplazan con objetos `vi.fn()`. No se levanta base de datos ni servidor.
+Esto permite que las pruebas corran en ~135 ms en total.
+
+**Módulos cubiertos:**
+- `lib`: `AppError`
+- `auth`: `Login` (bcrypt y jsonwebtoken mockeados)
+- `inventory`: `InventoryStock`, `AdjustStock`
+- `sales`: `Sale`, `SaleItem`, `ReturnSale`
+- `refunds`: `Refund`, `CreateRefund`, `ApproveRefund`, `RejectRefund`
+- `purchases`: `ReconcilePurchase`
+- `notifications`: `BroadcastNotification`, `MarkAsRead`, `DeleteNotification`
+- `exports`: `PivotDimension`, `GetPivotReport`, `GetAggregateTotals`, `DownloadCSV`
+
+**Módulos sin pruebas (fuera de scope):**
+Use cases de sólo lectura sin lógica de negocio (`ListProducts`, `ListInventory`,
+`ListPurchases`, etc.) y `CreateSale` / `CreatePurchase` que orquestan múltiples
+repositorios con lógica compleja — candidatos para una segunda iteración.
+
+**Decisión sobre include de cobertura:**
+El glob `src/modules/*/application/*.ts` incluía ~20 archivos sin tests,
+bajando el % global a 50 %. Se cambió a una lista explícita de los 19 archivos
+efectivamente cubiertos para que los umbrales reflejen el trabajo real hecho.

@@ -27,7 +27,7 @@ export function LoginPage() {
         }}
       >
         <h1 style={{ marginTop: 0, marginBottom: '1.5rem', fontSize: '1.5rem', textAlign: 'center' }}>
-          Legacy Nexus
+          Nexus Refactor
         </h1>
         <LoginForm />
       </section>

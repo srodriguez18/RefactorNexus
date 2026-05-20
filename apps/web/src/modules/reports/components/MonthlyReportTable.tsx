@@ -7,15 +7,6 @@ interface Props {
   onRetry: () => void
 }
 
-const thStyle: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.5rem 0.75rem',
-  borderBottom: '2px solid #e0e0e0',
-  fontWeight: 600,
-  fontSize: '0.85rem',
-  color: '#555',
-}
-
 const tdStyle: React.CSSProperties = {
   padding: '0.5rem 0.75rem',
   borderBottom: '1px solid #f0f0f0',
@@ -59,13 +50,13 @@ export function MonthlyReportTable({ rows, isLoading, isError, onRetry }: Props)
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={thStyle}>ID</th>
-            <th style={thStyle}>Fecha</th>
-            <th style={thStyle}>Usuario</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Subtotal</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Descuento</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Total</th>
-            <th style={{ ...thStyle, textAlign: 'right' }}>Arts.</th>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th style={{ textAlign: 'right' }}>Subtotal</th>
+            <th style={{ textAlign: 'right' }}>Descuento</th>
+            <th style={{ textAlign: 'right' }}>Total</th>
+            <th style={{ textAlign: 'right' }}>Arts.</th>
           </tr>
         </thead>
         <tbody>

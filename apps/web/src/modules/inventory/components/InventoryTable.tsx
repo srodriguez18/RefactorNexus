@@ -7,14 +7,6 @@ interface Props {
   onRetry: () => void
 }
 
-const th: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.6rem 0.75rem',
-  backgroundColor: '#f0f0f0',
-  borderBottom: '2px solid #ddd',
-  fontWeight: 600,
-}
-
 const td: React.CSSProperties = {
   padding: '0.55rem 0.75rem',
   borderBottom: '1px solid #eee',
@@ -54,9 +46,9 @@ export function InventoryTable({ stocks, isLoading, isError, onRetry }: Props) {
     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
       <thead>
         <tr>
-          <th style={th}>Producto</th>
-          <th style={th}>Almacén</th>
-          <th style={th}>Cantidad</th>
+          <th>Producto</th>
+          <th>Almacén</th>
+          <th>Cantidad</th>
         </tr>
       </thead>
       <tbody>

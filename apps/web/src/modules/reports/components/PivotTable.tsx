@@ -10,15 +10,6 @@ interface Props {
 
 const fmt = new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' })
 
-const thStyle: React.CSSProperties = {
-  padding: '0.45rem 0.75rem',
-  borderBottom: '2px solid #e0e0e0',
-  fontWeight: 600,
-  fontSize: '0.82rem',
-  color: '#555',
-  whiteSpace: 'nowrap',
-}
-
 const tdStyle: React.CSSProperties = {
   padding: '0.4rem 0.75rem',
   borderBottom: '1px solid #f0f0f0',
@@ -85,11 +76,11 @@ export function PivotTable({ rows, isLoading, isError, onRetry, empty }: Props) 
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={{ ...thStyle, textAlign: 'left' }}></th>
+            <th></th>
             {colLabels.map((col) => (
-              <th key={col} style={thStyle}>{col}</th>
+              <th key={col}>{col}</th>
             ))}
-            <th style={{ ...thStyle, color: '#1a1a2e' }}>Total</th>
+            <th>Total</th>
           </tr>
         </thead>
         <tbody>

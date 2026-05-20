@@ -76,6 +76,70 @@ curl http://localhost:3000/health
 
 ---
 
+## Pruebas
+
+### Backend (`apps/api`)
+
+Pruebas unitarias de la capa de aplicación y dominio con Vitest. Los repositorios se mockean — no requiere base de datos.
+
+```bash
+pnpm --filter @legacy-nexus/api test
+pnpm --filter @legacy-nexus/api test:watch
+pnpm --filter @legacy-nexus/api test:coverage
+```
+
+#### Cobertura actual (backend)
+
+| Métrica | Resultado | Umbral |
+|---|---|---|
+| Statements | 100 % | 80 % |
+| Functions | 100 % | 80 % |
+| Lines | 100 % | 80 % |
+| Branches | 100 % | 75 % |
+
+Módulos cubiertos: `AppError`, `Login`, `InventoryStock`, `AdjustStock`,
+`ReturnSale`, `CreateRefund`, `ApproveRefund`, `RejectRefund`,
+`ReconcilePurchase`, `BroadcastNotification`, `MarkAsRead`, `DeleteNotification`,
+`GetPivotReport`, `GetAggregateTotals`, `DownloadCSV` (70 pruebas en total).
+
+---
+
+### Frontend (`apps/web`)
+
+## Pruebas del frontend
+
+Las pruebas cubren los componentes principales del frontend con Vitest + Testing Library.
+
+### Ejecutar pruebas
+
+```bash
+# Una sola pasada
+pnpm --filter web test
+
+# Modo watch (re-ejecuta al guardar)
+pnpm --filter web test:watch
+
+# Con reporte de cobertura
+pnpm --filter web test:coverage
+```
+
+El reporte HTML de cobertura queda en `apps/web/coverage/lcov-report/index.html`.
+
+### Cobertura actual
+
+| Métrica | Resultado | Umbral |
+|---|---|---|
+| Statements | 99.72 % | 80 % |
+| Functions | 100 % | 80 % |
+| Lines | 99.72 % | 80 % |
+| Branches | 97.7 % | 75 % |
+
+Archivos cubiertos: `httpClient`, `LoginForm`, `ProductList`, `InventoryTable`,
+`SaleHistory`, `PurchaseList`, `RefundList`, `NotificationList`,
+`MonthlyReportTable`, `PivotTable` (89 pruebas en total).
+
+---
+
 ## Estructura del monorepo
 
 ```

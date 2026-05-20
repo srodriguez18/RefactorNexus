@@ -12,15 +12,6 @@ interface Props {
   isRejecting: boolean
 }
 
-const thStyle: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.5rem 0.75rem',
-  borderBottom: '2px solid #e0e0e0',
-  fontWeight: 600,
-  fontSize: '0.85rem',
-  color: '#555',
-}
-
 const tdStyle: React.CSSProperties = {
   padding: '0.5rem 0.75rem',
   borderBottom: '1px solid #f0f0f0',
@@ -61,13 +52,13 @@ export function RefundList({
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={thStyle}>ID</th>
-            <th style={thStyle}>Venta</th>
-            <th style={thStyle}>Monto</th>
-            <th style={thStyle}>Razón</th>
-            <th style={thStyle}>Estado</th>
-            <th style={thStyle}>Fecha</th>
-            {isAdmin && <th style={thStyle}>Acciones</th>}
+            <th>ID</th>
+            <th>Venta</th>
+            <th>Monto</th>
+            <th>Razón</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            {isAdmin && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>

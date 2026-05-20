@@ -9,15 +9,6 @@ interface Props {
   isReturning: boolean
 }
 
-const thStyle: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.5rem 0.75rem',
-  borderBottom: '2px solid #e0e0e0',
-  fontWeight: 600,
-  fontSize: '0.85rem',
-  color: '#555',
-}
-
 const tdStyle: React.CSSProperties = {
   padding: '0.5rem 0.75rem',
   borderBottom: '1px solid #f0f0f0',
@@ -48,13 +39,13 @@ export function SaleHistory({ sales, isLoading, isError, onRetry, onReturn, isRe
       <table style={{ width: '100%', borderCollapse: 'collapse' }}>
         <thead>
           <tr>
-            <th style={thStyle}>ID</th>
-            <th style={thStyle}>Fecha</th>
-            <th style={thStyle}>Subtotal</th>
-            <th style={thStyle}>Descuento</th>
-            <th style={thStyle}>Total</th>
-            <th style={thStyle}>Estado</th>
-            <th style={thStyle}></th>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Subtotal</th>
+            <th>Descuento</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>

@@ -9,14 +9,6 @@ interface Props {
   onDelete: (id: number) => void
 }
 
-const th: React.CSSProperties = {
-  textAlign: 'left',
-  padding: '0.6rem 0.75rem',
-  backgroundColor: '#f0f0f0',
-  borderBottom: '2px solid #ddd',
-  fontWeight: 600,
-}
-
 const td: React.CSSProperties = {
   padding: '0.55rem 0.75rem',
   borderBottom: '1px solid #eee',
@@ -57,11 +49,11 @@ export function ProductList({ products, isLoading, isError, onRetry, onDelete }:
     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
       <thead>
         <tr>
-          <th style={th}>SKU</th>
-          <th style={th}>Nombre</th>
-          <th style={th}>Precio</th>
-          <th style={th}>Categoría</th>
-          <th style={th}>Acciones</th>
+          <th>SKU</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Categoría</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>

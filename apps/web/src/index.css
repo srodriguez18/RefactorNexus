@@ -216,6 +216,71 @@ tbody tr:hover {
   text-align: center;
 }
 
+/* ─── Navigation ─────────────────────────────────────────────────────────── */
+.app-nav {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+  padding: 0 1.5rem;
+  background-color: var(--color-brand);
+  color: var(--color-accent);
+  height: 52px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,.25);
+}
+
+.app-nav__brand {
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  color: #fff;
+  margin-right: 0.75rem;
+}
+
+.nav-link {
+  color: var(--color-accent-dark);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+  transition: color var(--transition), background-color var(--transition);
+  white-space: nowrap;
+}
+
+.nav-link:hover {
+  color: #fff;
+  background-color: rgba(255,255,255,.08);
+  text-decoration: none;
+}
+
+.nav-link--active {
+  color: #fff;
+  background-color: rgba(255,255,255,.14);
+  font-weight: 600;
+}
+
+.nav-logout {
+  margin-left: auto;
+  background: transparent;
+  color: var(--color-accent-dark);
+  border: 1px solid rgba(224,224,255,.35);
+  border-radius: var(--radius-sm);
+  padding: 0.25rem 0.75rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition),
+              background-color var(--transition);
+}
+
+.nav-logout:hover {
+  color: #fff;
+  border-color: rgba(224,224,255,.7);
+  background-color: rgba(255,255,255,.08);
+}
+
 /* ─── Scrollbar ──────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar {
   width: 6px;
