@@ -1,5 +1,5 @@
 {
-  "name": "@legacy-nexus/finanzas",
+  "name": "@legacy-nexus/shared",
   "version": "0.0.0",
   "private": true,
   "type": "module",
