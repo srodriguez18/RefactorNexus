@@ -49,3 +49,26 @@ export type AdjustStockDto = {
   quantity: number
   type: MovementType
 }
+
+export type SaleItemDto = {
+  productId: number
+  quantity: number
+}
+
+export type CreateSaleDto = {
+  customerType: 'NORMAL' | 'LEGACY_A'
+  items: SaleItemDto[]
+}
+
+export type SaleSummary = {
+  id: number
+  subtotal: number
+  discount: number
+  total: number
+  status: string
+  items: Array<{
+    productId: number
+    quantity: number
+    unitPrice: number
+  }>
+}

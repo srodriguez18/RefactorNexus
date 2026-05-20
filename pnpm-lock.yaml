@@ -16,6 +16,9 @@ importers:
       '@fastify/jwt':
         specifier: ^10.0.0
         version: 10.1.0
+      '@legacy-nexus/finance':
+        specifier: workspace:*
+        version: link:../../packages/finance
       '@legacy-nexus/shared':
         specifier: workspace:*
         version: link:../../packages/shared
