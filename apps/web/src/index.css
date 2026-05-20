@@ -159,6 +159,7 @@ th {
   font-size: 0.8rem;
   letter-spacing: 0.02em;
   white-space: nowrap;
+  color: var(--color-brand-light);
 }
 
 td {
