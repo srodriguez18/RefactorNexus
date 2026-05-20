@@ -60,6 +60,26 @@ export type CreateSaleDto = {
   items: SaleItemDto[]
 }
 
+export type NotificationKind = 'info' | 'warn' | 'alert' | 'system' | 'marketing'
+export type NotificationStatus = 'unread' | 'read'
+export type Notification = {
+  id: number
+  userId: number
+  message: string
+  kind: NotificationKind
+  status: NotificationStatus
+  createdAt: string
+}
+export type CreateNotificationDto = {
+  userId: number
+  message: string
+  kind: NotificationKind
+}
+export type BroadcastNotificationDto = {
+  message: string
+  kind: NotificationKind
+}
+
 export type SaleRecord = {
   id: number
   userId: number

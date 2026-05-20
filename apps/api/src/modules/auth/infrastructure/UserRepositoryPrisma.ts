@@ -16,4 +16,9 @@ export class UserRepositoryPrisma implements IUserRepository {
     if (!row) return null
     return { id: row.id, username: row.username, isAdmin: row.isAdmin }
   }
+
+  async listAllIds(): Promise<number[]> {
+    const rows = await this.prisma.user.findMany({ select: { id: true } })
+    return rows.map((r) => r.id)
+  }
 }

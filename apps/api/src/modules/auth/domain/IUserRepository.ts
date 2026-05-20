@@ -7,4 +7,5 @@ export interface UserWithHash extends User {
 export interface IUserRepository {
   findByUsername(username: string): Promise<UserWithHash | null>
   findById(id: number): Promise<User | null>
+  listAllIds(): Promise<number[]>
 }
